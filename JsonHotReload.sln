@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JsonHotReload", "JsonHotReload\JsonHotReload.csproj", "{F3AE245D-104A-4828-BCD4-B11449B4BBBF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JsonHotReload.Tests", "JsonHotReload.Tests\JsonHotReload.Tests.csproj", "{EA5EF5EC-17B1-4370-A9AE-39C236A7D381}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F3AE245D-104A-4828-BCD4-B11449B4BBBF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F3AE245D-104A-4828-BCD4-B11449B4BBBF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F3AE245D-104A-4828-BCD4-B11449B4BBBF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F3AE245D-104A-4828-BCD4-B11449B4BBBF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EA5EF5EC-17B1-4370-A9AE-39C236A7D381}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EA5EF5EC-17B1-4370-A9AE-39C236A7D381}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EA5EF5EC-17B1-4370-A9AE-39C236A7D381}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EA5EF5EC-17B1-4370-A9AE-39C236A7D381}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
