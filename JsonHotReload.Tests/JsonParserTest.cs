@@ -21,14 +21,14 @@ public class JsonParserTest
     }
     
     [TestMethod]
-    public async Task TestGenericDeserializeAsync()
+    public async Task TestGenericParseAsync()
     {
         var result = await JsonParser.Instance.ParseAsync<DeserializationTarget>(TestFilePath);
         result.Should().Be(new DeserializationTarget("Test Name", 3));
     }
     
     [TestMethod]
-    public async Task TestDeserializeAsyncByType()
+    public async Task TestParseAsyncByType()
     {
         var result = await JsonParser.Instance.ParseAsync(TestFilePath, typeof(DeserializationTarget));
         result.Should().Be(new DeserializationTarget("Test Name", 3));

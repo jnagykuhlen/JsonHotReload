@@ -21,7 +21,7 @@ public class HotReloadingJsonParserTest
     }
 
     [TestMethod]
-    public async Task TestDeserializeAsyncWithMultipleTargets()
+    public async Task TestParseAsyncWithMultipleTargets()
     {
         using var jsonDeserializer = new HotReloadingJsonParser(TestDirectory);
 
@@ -42,7 +42,7 @@ public class HotReloadingJsonParserTest
     }
 
     [TestMethod]
-    public async Task TestDeserializeAsyncWithCapitalizedExtension()
+    public async Task TestParseAsyncWithCapitalizedExtension()
     {
         using var jsonDeserializer = new HotReloadingJsonParser(TestDirectory);
 
@@ -55,7 +55,7 @@ public class HotReloadingJsonParserTest
     }
 
     [TestMethod]
-    public async Task TestDeserializeAsyncWithNonJsonExtension()
+    public async Task TestParseAsyncWithNonJsonExtension()
     {
         var filePath = Path.Combine(TestDirectory, "test-extension-unsupported.xml");
 
@@ -70,7 +70,7 @@ public class HotReloadingJsonParserTest
     }
 
     [TestMethod]
-    public async Task TestDeserializeAsyncWithUntrackedFilePath()
+    public async Task TestParseAsyncWithUntrackedFilePath()
     {
         var filePath = "untracked/test-untracked.json";
 
@@ -85,7 +85,7 @@ public class HotReloadingJsonParserTest
     }
 
     [TestMethod]
-    public async Task TestDeserializeAsyncWithReloadableTarget()
+    public async Task TestParseAsyncWithReloadableTarget()
     {
         using var jsonDeserializer = new HotReloadingJsonParser(TestDirectory);
 
@@ -105,7 +105,7 @@ public class HotReloadingJsonParserTest
     }
 
     [TestMethod]
-    public async Task TestDeserializeAsyncWithArray()
+    public async Task TestParseAsyncWithArray()
     {
         using var jsonDeserializer = new HotReloadingJsonParser(TestDirectory);
 
