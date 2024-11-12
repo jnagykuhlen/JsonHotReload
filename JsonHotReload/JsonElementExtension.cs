@@ -20,7 +20,8 @@ public static class JsonElementExtension
         {
             var deserializedValue = JsonSerializer.Deserialize(
                 property.Value.GetRawText(),
-                propertyInfo.PropertyType
+                propertyInfo.PropertyType,
+                CommonJsonSerializerOptions.CaseInsensitive
             );
 
             propertyInfo.SetValue(target, deserializedValue);
