@@ -27,6 +27,7 @@ public class JsonElementExtensionTest
         objectElement.Populate(target);
 
         target.Should().Be(new NestedTestObject(new TestObject("Another Test Name", 5), true));
+        target.Inner.Should().BeSameAs(inner);
     }
     
     private record TestObject(string Name, int Value);

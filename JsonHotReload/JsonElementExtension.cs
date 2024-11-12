@@ -18,13 +18,19 @@ public static class JsonElementExtension
         var propertyInfo = target.GetType().GetProperty(property.Name, PropertyBindingFlags);
         if (propertyInfo != null)
         {
-            var deserializedValue = JsonSerializer.Deserialize(
-                property.Value.GetRawText(),
-                propertyInfo.PropertyType,
-                CommonJsonSerializerOptions.CaseInsensitive
-            );
+            if (property.Value.ValueKind == JsonValueKind.Object && propertyInfo.CanRead)
+            {
+                var propertyValue = propertyInfo.GetValue(target);
+                if (propertyValue != null)
+                    property.Value.Populate(propertyValue);
+            }
+            else if (propertyInfo.CanWrite)
+            {
+                var deserializedValue =
+                    property.Value.Deserialize(propertyInfo.PropertyType, CommonJsonSerializerOptions.CaseInsensitive);
 
-            propertyInfo.SetValue(target, deserializedValue);
+                propertyInfo.SetValue(target, deserializedValue);
+            }
         }
     }
 }
