@@ -10,53 +10,76 @@ public class JsonElementExtensionTest
     public void TestPopulateObject()
     {
         var target = new TestObject("Test Name", 3);
-        
+
         var objectElement = JsonDocument.Parse("""{"name":"Another Test Name","unused":42}""").RootElement;
         objectElement.Populate(target);
 
         target.Should().Be(new TestObject("Another Test Name", 3));
     }
-    
+
     [TestMethod]
     public void TestPopulateNestedObject()
     {
         var inner = new TestObject("Test Name", 3);
         var target = new NestedTestObject(inner, true);
-        
+
         var objectElement = JsonDocument.Parse("""{"inner":{"name":"Another Test Name","value":5},"flag":true}""").RootElement;
         objectElement.Populate(target);
 
         target.Should().Be(new NestedTestObject(new TestObject("Another Test Name", 5), true));
         target.Inner.Should().BeSameAs(inner);
     }
-    
+
     [TestMethod]
     public void TestPopulatePopulatableObject()
     {
         var target = new PopulatableTestObject("Test Name");
         target.Populated.Should().BeFalse();
-        
+
         var objectElement = JsonDocument.Parse("""{"name":"Another Test Name","value":5}""").RootElement;
         objectElement.Populate(target);
 
         target.Name.Should().Be("Test Name");
         target.Populated.Should().BeTrue();
     }
-    
+
     [TestMethod]
-    public void TestPopulateArray()
+    public void TestPopulateEnumerable()
     {
-        var target = new List<TestObject> { new("Test Name", 3) };
-        
+        var target = (IEnumerable<TestObject>) [new TestObject("Test Name", 3)];
+
         var objectElement = JsonDocument.Parse("""[{"name":"Another Test Name","value":5}, {"name":"Ignored","value":1}]""").RootElement;
         objectElement.Populate(target);
 
         target.Should().Equal(new TestObject("Another Test Name", 5));
     }
+
+    [TestMethod]
+    public void TestPopulateListWithMoreElements()
+    {
+        var target = new List<TestObject> { new("Test Name", 3) };
+
+        var objectElement = JsonDocument.Parse("""[{"name":"Another Test Name","value":5}, {"name":"Yet Another Test Name","value":1}]""").RootElement;
+        objectElement.Populate(target);
+
+        target.Should().Equal(new TestObject("Another Test Name", 5), new TestObject("Yet Another Test Name", 1));
+    }
     
+    [TestMethod]
+    public void TestPopulateListWithLessElements()
+    {
+        var target = new List<TestObject> { new("Test Name", 3), new("Another Test Name", 5) };
+
+        var objectElement = JsonDocument.Parse("""[{"name":"Yet Another Test Name","value":1}]""").RootElement;
+        objectElement.Populate(target);
+
+        target.Should().Equal(new TestObject("Yet Another Test Name", 1));
+    }
+
     private record TestObject(string Name, int Value);
+
     private record NestedTestObject(TestObject Inner, bool Flag);
-    
+
     private class PopulatableTestObject(string name) : IPopulatable
     {
         public string Name { get; } = name;
