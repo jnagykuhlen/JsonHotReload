@@ -84,44 +84,6 @@ public class HotReloadingJsonParserTest
             .WithMessage("'untracked/test-untracked.json' is not part of tracked directory 'tmp'.*");
     }
 
-    [TestMethod]
-    public async Task TestParseAsyncWithReloadableTarget()
-    {
-        using var jsonDeserializer = new HotReloadingJsonParser(TestDirectory);
-
-        var filePath = Path.Combine(TestDirectory, "test-reloadable.json");
-
-        await WriteAndWaitAsync(filePath, """{"name":"Test Name"}""");
-
-        var result = await jsonDeserializer.ParseAsync<ReloadableDeserializationTarget>(filePath);
-
-        result.Name.Should().Be("Test Name");
-        result.Reloaded.Should().BeFalse();
-
-        await WriteAndWaitAsync(filePath, """{"name":"Another Test Name"}""");
-
-        result.Name.Should().Be("Test Name");
-        result.Reloaded.Should().BeTrue();
-    }
-
-    [TestMethod]
-    public async Task TestParseAsyncWithArray()
-    {
-        using var jsonDeserializer = new HotReloadingJsonParser(TestDirectory);
-
-        var filePath = Path.Combine(TestDirectory, "test-array.json");
-
-        await WriteAndWaitAsync(filePath, """[{"name":"Test Name","value":3}]""");
-
-        var result = await jsonDeserializer.ParseAsync<List<DeserializationTarget>>(filePath);
-
-        result.Should().BeEquivalentTo([new DeserializationTarget("Test Name", 3)]);
-        
-        await WriteAndWaitAsync(filePath, """[{"name":"Another Test Name","value":42}]""");
-        
-        result.Should().BeEquivalentTo([new DeserializationTarget("Another Test Name", 42)]);
-    }
-
     private static async Task WriteAndWaitAsync(string filePath, string contents)
     {
         await File.WriteAllTextAsync(filePath, contents);
@@ -131,16 +93,4 @@ public class HotReloadingJsonParserTest
     private record DeserializationTarget(string Name, int Value);
 
     private record AnotherDeserializationTarget(string Name, int Value, bool Flag);
-
-
-    private class ReloadableDeserializationTarget(string name) : IReloadable
-    {
-        public string Name { get; } = name;
-        public bool Reloaded { get; private set; }
-
-        public void OnReload(JsonElement jsonElement)
-        {
-            Reloaded = true;
-        }
-    }
 }

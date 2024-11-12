@@ -7,7 +7,7 @@ namespace JsonHotReload.Tests;
 public class JsonElementExtensionTest
 {
     [TestMethod]
-    public void TestPopulate()
+    public void TestPopulateObject()
     {
         var target = new TestObject("Test Name", 3);
         
@@ -18,7 +18,7 @@ public class JsonElementExtensionTest
     }
     
     [TestMethod]
-    public void TestPopulateNested()
+    public void TestPopulateNestedObject()
     {
         var inner = new TestObject("Test Name", 3);
         var target = new NestedTestObject(inner, true);
@@ -30,6 +30,41 @@ public class JsonElementExtensionTest
         target.Inner.Should().BeSameAs(inner);
     }
     
+    [TestMethod]
+    public void TestPopulatePopulatableObject()
+    {
+        var target = new PopulatableTestObject("Test Name");
+        target.Populated.Should().BeFalse();
+        
+        var objectElement = JsonDocument.Parse("""{"name":"Another Test Name","value":5}""").RootElement;
+        objectElement.Populate(target);
+
+        target.Name.Should().Be("Test Name");
+        target.Populated.Should().BeTrue();
+    }
+    
+    [TestMethod]
+    public void TestPopulateArray()
+    {
+        var target = new List<TestObject> { new("Test Name", 3) };
+        
+        var objectElement = JsonDocument.Parse("""[{"name":"Another Test Name","value":5}, {"name":"Ignored","value":1}]""").RootElement;
+        objectElement.Populate(target);
+
+        target.Should().Equal(new TestObject("Another Test Name", 5));
+    }
+    
     private record TestObject(string Name, int Value);
     private record NestedTestObject(TestObject Inner, bool Flag);
+    
+    private class PopulatableTestObject(string name) : IPopulatable
+    {
+        public string Name { get; } = name;
+        public bool Populated { get; private set; }
+
+        public void PopulateFrom(JsonElement jsonElement)
+        {
+            Populated = true;
+        }
+    }
 }

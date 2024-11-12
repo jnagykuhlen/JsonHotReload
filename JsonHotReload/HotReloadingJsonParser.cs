@@ -34,29 +34,12 @@ public class HotReloadingJsonParser : IJsonParser, IDisposable
                 var jsonElement = (await JsonDocument.ParseAsync(fileStream)).RootElement;
 
                 foreach (var trackedInstance in trackedInstances)
-                    Reload(trackedInstance, jsonElement);
+                    jsonElement.Populate(trackedInstance);
             }
             catch (IOException exception)
             {
                 Debug.WriteLine($"Failed to reload file '{filePath}': {exception.Message}");
             }
-        }
-    }
-
-    private static void Reload(object instance, JsonElement jsonElement)
-    {
-        if (instance is IReloadable reloadableInstance)
-        {
-            reloadableInstance.OnReload(jsonElement);
-        }
-        else if (instance is IEnumerable<object> enumerableInstance && jsonElement.ValueKind == JsonValueKind.Array)
-        {
-            foreach (var (item, itemJsonElement) in enumerableInstance.Zip(jsonElement.EnumerateArray()))
-                Reload(item, itemJsonElement);
-        }
-        else if (jsonElement.ValueKind == JsonValueKind.Object)
-        {
-            jsonElement.Populate(instance);
         }
     }
 
@@ -78,10 +61,7 @@ public class HotReloadingJsonParser : IJsonParser, IDisposable
         return instance;
     }
 
-    public void Dispose()
-    {
-        fileSystemWatcher.Dispose();
-    }
+    public void Dispose() => fileSystemWatcher.Dispose();
 
     private static string Normalize(string filePath) => filePath.Replace('\\', '/');
 }
