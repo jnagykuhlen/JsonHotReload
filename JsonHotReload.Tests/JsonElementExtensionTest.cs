@@ -1,3 +1,4 @@
+using System.Collections.ObjectModel;
 using System.Text.Json;
 using FluentAssertions;
 
@@ -42,14 +43,14 @@ public class JsonElementExtensionTest
         target.Name.Should().Be("Test Name");
         target.Populated.Should().BeTrue();
     }
-
+    
     [TestMethod]
-    public void TestPopulateEnumerable()
+    public void TestPopulateReadOnlyCollection()
     {
-        var target = (IEnumerable<TestObject>) [new TestObject("Test Name", 3)];
+        var target = new ReadOnlyCollection<TestObject>(new List<TestObject> { new("Test Name", 3) });
 
-        var objectElement = JsonDocument.Parse("""[{"name":"Another Test Name","value":5}, {"name":"Ignored","value":1}]""").RootElement;
-        objectElement.Populate(target);
+        var arrayElement = JsonDocument.Parse("""[{"name":"Another Test Name","value":5}, {"name":"Ignored","value":1}]""").RootElement;
+        arrayElement.Populate(target);
 
         target.Should().Equal(new TestObject("Another Test Name", 5));
     }
@@ -59,19 +60,19 @@ public class JsonElementExtensionTest
     {
         var target = new List<TestObject> { new("Test Name", 3) };
 
-        var objectElement = JsonDocument.Parse("""[{"name":"Another Test Name","value":5}, {"name":"Yet Another Test Name","value":1}]""").RootElement;
-        objectElement.Populate(target);
+        var arrayElement = JsonDocument.Parse("""[{"name":"Another Test Name","value":5}, {"name":"Yet Another Test Name","value":1}]""").RootElement;
+        arrayElement.Populate(target);
 
         target.Should().Equal(new TestObject("Another Test Name", 5), new TestObject("Yet Another Test Name", 1));
     }
-    
+
     [TestMethod]
     public void TestPopulateListWithLessElements()
     {
         var target = new List<TestObject> { new("Test Name", 3), new("Another Test Name", 5) };
 
-        var objectElement = JsonDocument.Parse("""[{"name":"Yet Another Test Name","value":1}]""").RootElement;
-        objectElement.Populate(target);
+        var arrayElement = JsonDocument.Parse("""[{"name":"Yet Another Test Name","value":1}]""").RootElement;
+        arrayElement.Populate(target);
 
         target.Should().Equal(new TestObject("Yet Another Test Name", 1));
     }

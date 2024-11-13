@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Diagnostics;
 using System.Reflection;
 using System.Text.Json;
 
@@ -10,17 +11,24 @@ public static class JsonElementExtension
 
     public static void Populate(this JsonElement jsonElement, object target)
     {
-        if (target is IPopulatable populatableTarget)
+        try
         {
-            populatableTarget.PopulateFrom(jsonElement);
+            if (target is IPopulatable populatableTarget)
+            {
+                populatableTarget.PopulateFrom(jsonElement);
+            }
+            else if (target is IEnumerable<object> enumerableTarget && jsonElement.ValueKind == JsonValueKind.Array)
+            {
+                jsonElement.PopulateArray(enumerableTarget);
+            }
+            else if (jsonElement.ValueKind == JsonValueKind.Object)
+            {
+                jsonElement.PopulateObject(target);
+            }
         }
-        else if (target is IEnumerable<object> enumerableTarget && jsonElement.ValueKind == JsonValueKind.Array)
+        catch (Exception exception)
         {
-            jsonElement.PopulateArray(enumerableTarget);
-        }
-        else if (jsonElement.ValueKind == JsonValueKind.Object)
-        {
-            jsonElement.PopulateObject(target);
+            Debug.WriteLine($"Populate failed: {exception.Message}");
         }
     }
 
