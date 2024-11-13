@@ -26,25 +26,22 @@ public static class JsonElementExtension
 
     public static void PopulateArray(this JsonElement jsonArrayElement, IEnumerable<object> enumerableTarget)
     {
-        using var targetEnumerator = enumerableTarget.GetEnumerator();
-        using var jsonArrayEnumerator = jsonArrayElement.EnumerateArray().GetEnumerator();
-
-        var count = 0;
-        while (targetEnumerator.MoveNext() && jsonArrayEnumerator.MoveNext())
-        {
-            jsonArrayEnumerator.Current.Populate(targetEnumerator.Current);
-            count++;
-        }
+        var jsonArrayItemsWithTargetItems = jsonArrayElement.EnumerateArray()
+            .ZipWithRemainder(enumerableTarget, out var jsonArrayRemainder, out var targetRemainder);
+        
+        foreach (var (jsonArrayItem, targetItem) in jsonArrayItemsWithTargetItems)
+            jsonArrayItem.Populate(targetItem);
 
         if (enumerableTarget is IList listTarget)
         {
-            listTarget.RemoveAllStartingAt(count);
+            foreach (var targetItem in targetRemainder)
+                listTarget.Remove(targetItem);
 
             var itemType = listTarget.GetItemType();
             if (itemType != null)
             {
-                while (jsonArrayEnumerator.MoveNext())
-                    listTarget.Add(jsonArrayEnumerator.Current.Deserialize(itemType, CommonJsonSerializerOptions.CaseInsensitive));
+                foreach (var jsonArrayItem in jsonArrayRemainder)
+                    listTarget.Add(jsonArrayItem.Deserialize(itemType, CommonJsonSerializerOptions.CaseInsensitive));
             }
         }
     }
